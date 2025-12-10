@@ -32,6 +32,17 @@ function utils.filter(tbl, predicate)
   return result
 end
 
+function utils.concat(tbl1, tbl2)
+  local result = {}
+  for _, v in ipairs(tbl1) do
+    table.insert(result, v)
+  end
+  for _, v in ipairs(tbl2) do
+    table.insert(result, v)
+  end
+  return result
+end
+
 function utils.sum(tbl)
   local total = 0
   for _, v in ipairs(tbl) do
@@ -47,14 +58,10 @@ function utils.read_file(filename)
     error("Could not open file: " .. filename)
   end
 
-  local data = {}
-  for line in file:lines() do
-    -- Parse your input here
-    table.insert(data, line)
-  end
+  local data = file:read("*all")
   file:close()
 
-  return data
+  return utils.trim(data)
 end
 
 function utils.read_lines(filename)
