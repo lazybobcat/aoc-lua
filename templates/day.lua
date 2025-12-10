@@ -3,10 +3,15 @@ local inspect = require("lib.inspect")
 
 local Day = {}
 
+function parse_input(lines)
+  -- TODO: transform lines into useful data
+end
+
 -- Part 1 solution
 function Day.part1(data)
   -- Implement part 1 here
   print(inspect(data))
+  local parsed = parse_input(data)
   return 0
 end
 
@@ -14,6 +19,7 @@ end
 function Day.part2(data)
   -- Implement part 2 here
   print(inspect(data))
+  local parsed = parse_input(data)
   return 0
 end
 
