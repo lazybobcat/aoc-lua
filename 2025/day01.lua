@@ -3,23 +3,7 @@ local inspect = require("lib.inspect")
 
 local Day = {}
 
---[[
-The safe has a dial with only an arrow on it; around the dial are the numbers 0 through 99 in order. As you turn the dial, it makes a small click noise as it reaches each number.
-
-The attached document (your puzzle input) contains a sequence of rotations, one per line, which tell you how to open the safe. A rotation starts with an L or R which indicates whether the rotation should be to the left (toward lower numbers) or to the right (toward higher numbers). Then, the rotation has a distance value which indicates how many clicks the dial should be rotated in that direction.
-
-So, if the dial were pointing at 11, a rotation of R8 would cause the dial to point at 19. After that, a rotation of L19 would cause it to point at 0.
-
-Because the dial is a circle, turning the dial left from 0 one click makes it point at 99. Similarly, turning the dial right from 99 one click makes it point at 0.
-
-So, if the dial were pointing at 5, a rotation of L10 would cause it to point at 95. After that, a rotation of R5 could cause it to point at 0.
-
-The dial starts by pointing at 50.
-
-You could follow the instructions, but your recent required official North Pole secret entrance security training seminar taught you that the safe is actually a decoy. The actual password is the number of times the dial is left pointing at 0 after any rotation in the sequence.
---]] --
-
-function parse_input(lines)
+local function parse_input(lines)
   local parsed = {}
   for _, line in ipairs(lines) do
     local direction, steps = line:match("([LR])(%d+)")
@@ -32,19 +16,31 @@ function parse_input(lines)
   return parsed
 end
 
-function dialRight(start, steps)
-  local result = (start + steps) % 100
-  return result
+local function dialRight(start, steps)
+  local passedZero = 0
+  for _ = 1, steps do
+    start = (start + 1) % 100
+    if start == 0 then
+      passedZero = passedZero + 1
+    end
+  end
+  return start, passedZero
 end
 
-function dialLeft(start, steps)
-  local result = math.abs((start - steps) % 100)
-  return result
+local function dialLeft(start, steps)
+  local passedZero = 0
+  for _ = 1, steps do
+    start = (start - 1) % 100
+    if start == 0 then
+      passedZero = passedZero + 1
+    end
+  end
+
+  return start, passedZero
 end
 
 -- Part 1 solution
 function Day.part1(data)
-  -- Implement part 1 here
   local parsed = parse_input(data)
   local start = 50
   local zeroCount = 0
@@ -65,9 +61,20 @@ end
 
 -- Part 2 solution
 function Day.part2(data)
-  -- Implement part 2 here
-  print(inspect(data))
-  return 0
+  local parsed = parse_input(data)
+  local start = 50
+  local zeroCount = 0
+  for _, step in ipairs(parsed) do
+    local passedZero = 0
+    if step.direction == "L" then
+      start, passedZero = dialLeft(start, step.steps)
+    elseif step.direction == "R" then
+      start, passedZero = dialRight(start, step.steps)
+    end
+    zeroCount = zeroCount + passedZero
+  end
+
+  return zeroCount
 end
 
 -- Main execution

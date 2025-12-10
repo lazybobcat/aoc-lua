@@ -3,8 +3,11 @@ local inspect = require("lib.inspect")
 
 local Day = {}
 
-function parse_input(lines)
+local function parse_input(lines)
+  local parsed = {}
   -- TODO: transform lines into useful data
+
+  return parsed
 end
 
 -- Part 1 solution
