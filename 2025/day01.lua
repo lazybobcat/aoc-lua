@@ -79,7 +79,7 @@ end
 
 -- Main execution
 function Day.run(input_file, part)
-  local data = utils.read_file(input_file)
+  local data = utils.read_lines(input_file)
 
   if part == 1 or part == nil then
     local result = Day.part1(data)

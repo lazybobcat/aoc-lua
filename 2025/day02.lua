@@ -18,7 +18,7 @@ local function parse_input(lines)
 end
 
 -- Find ids with repeating digits, e.g. in {998-1012} there is one invalid id: 1010 (because 10 and 10)
-local find_invalid_ids = function(startId, endId)
+local find_invalid_ids_part1 = function(startId, endId)
   local invalidIds = {}
   for i = startId, endId do
     local digits = tostring(i)
@@ -36,6 +36,25 @@ local find_invalid_ids = function(startId, endId)
   return invalidIds
 end
 
+-- Find ids with repeating digits patterns, e.g. in {998-1012} there is two invalid ids: 999 and 1010
+local find_invalid_ids_part2 = function(startId, endId)
+  local invalidIds = {}
+  for i = startId, endId do
+    local digits = tostring(i)
+    -- from first to last digit check if there is a repeating pattern
+    for j = 1, math.floor(#digits / 2) do
+      local sequence = digits:sub(0, j)
+      local pattern = string.rep(sequence, math.floor(#digits / #sequence))
+      if digits == pattern then
+        table.insert(invalidIds, i)
+        break
+      end
+    end
+  end
+
+  return invalidIds
+end
+
 -- Part 1 solution
 function Day.part1(data)
   local parsed = parse_input(data)
@@ -43,7 +62,7 @@ function Day.part1(data)
   for _, range in ipairs(parsed) do
     local startId = range[1]
     local endId = range[2]
-    local invalid = find_invalid_ids(startId, endId)
+    local invalid = find_invalid_ids_part1(startId, endId)
     if #invalid > 0 then
       invalidIds = utils.concat(invalidIds, invalid)
     end
@@ -54,10 +73,18 @@ end
 
 -- Part 2 solution
 function Day.part2(data)
-  -- Implement part 2 here
   local parsed = parse_input(data)
-  print(inspect(parsed))
-  return 0
+  local invalidIds = {}
+  for _, range in ipairs(parsed) do
+    local startId = range[1]
+    local endId = range[2]
+    local invalid = find_invalid_ids_part2(startId, endId)
+    if #invalid > 0 then
+      invalidIds = utils.concat(invalidIds, invalid)
+    end
+  end
+
+  return utils.sum(invalidIds)
 end
 
 -- Main execution
