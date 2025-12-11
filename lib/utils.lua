@@ -33,14 +33,16 @@ end
 --- Converts a table to a string by putting each element on a new line
 ---@param tbl table The table to convert
 ---@return string The formatted string representation
-function utils.map2d_to_string(tbl)
+function utils.map2d_to_string(tbl, separator)
+  separator = separator or ""
   local result = ""
   for i = 1, #tbl do
     local row = tbl[i]
     for j = 1, #row do
       local char = row[j]
-      result = result .. tostring(char)
+      result = result .. tostring(char) .. separator
     end
+    result = result:sub(1, #result - #separator)
     result = result .. "\n"
   end
   return result
