@@ -29,10 +29,10 @@ local function find_largest_joltage(bank, nb_batteries)
   local current_pos = 1
 
   for j = 1, nb_batteries do
-    local sub_bank = bank:sub(current_pos, #bank - nb_batteries + j)
+    local sub_bank = bank:sub(current_pos, #bank - (nb_batteries - j))
     local biggest_digit, biggest_digit_pos = find_biggest_digit(sub_bank)
     total = total + biggest_digit * 10 ^ (nb_batteries - j)
-    current_pos = biggest_digit_pos + 1
+    current_pos = current_pos + biggest_digit_pos
   end
 
   return total
@@ -40,7 +40,6 @@ end
 
 -- Part 1 solution
 function Day.part1(data)
-  -- Implement part 1 here
   local parsed = parse_input(data)
   local joltages = {}
   for _, bank in ipairs(parsed) do
@@ -48,15 +47,19 @@ function Day.part1(data)
     table.insert(joltages, largest)
   end
 
-  return utils.sum(joltages)
+  return string.format("%.f", utils.sum(joltages))
 end
 
 -- Part 2 solution
 function Day.part2(data)
-  -- Implement part 2 here
-  print(inspect(data))
   local parsed = parse_input(data)
-  return 0
+  local joltages = {}
+  for _, bank in ipairs(parsed) do
+    local largest = find_largest_joltage(bank, 12)
+    table.insert(joltages, largest)
+  end
+
+  return string.format("%.f", utils.sum(joltages))
 end
 
 -- Main execution
