@@ -1,6 +1,13 @@
+--- Utility functions for Advent of Code solutions
+---@class utils
 local utils = {}
 
 -- String utilities
+
+--- Splits a string by a delimiter
+---@param str string The string to split
+---@param delimiter string The delimiter pattern to split by
+---@return table Array of string parts
 function utils.split(str, delimiter)
   local result = {}
   for match in (str .. delimiter):gmatch("(.-)" .. delimiter) do
@@ -9,11 +16,26 @@ function utils.split(str, delimiter)
   return result
 end
 
+--- Trims whitespace from both ends of a string
+---@param str string The string to trim
+---@return string The trimmed string
 function utils.trim(str)
   return str:match("^%s*(.-)%s*$")
 end
 
+--- Converts an integer to a string without decimal notation
+---@param n number The number to convert
+---@return string The formatted string representation
+function utils.int_to_string(n)
+  return string.format("%.f", n)
+end
+
 -- Table utilities
+
+--- Maps a function over a table
+---@param tbl table The input array
+---@param func function Function to apply to each element
+---@return table New array with transformed elements
 function utils.map(tbl, func)
   local result = {}
   for i, v in ipairs(tbl) do
@@ -22,6 +44,10 @@ function utils.map(tbl, func)
   return result
 end
 
+--- Filters a table based on a predicate function
+---@param tbl table The input array
+---@param predicate function Function that returns true for elements to keep
+---@return table New array with filtered elements
 function utils.filter(tbl, predicate)
   local result = {}
   for _, v in ipairs(tbl) do
@@ -32,6 +58,10 @@ function utils.filter(tbl, predicate)
   return result
 end
 
+--- Concatenates two tables into a new table
+---@param tbl1 table First array
+---@param tbl2 table Second array
+---@return table New array containing all elements from both tables
 function utils.concat(tbl1, tbl2)
   local result = {}
   for _, v in ipairs(tbl1) do
@@ -43,6 +73,9 @@ function utils.concat(tbl1, tbl2)
   return result
 end
 
+--- Sums all numeric elements in a table
+---@param tbl table Array of numbers
+---@return number
 function utils.sum(tbl)
   local total = 0
   for _, v in ipairs(tbl) do
@@ -52,6 +85,10 @@ function utils.sum(tbl)
 end
 
 -- File utilities
+
+--- Reads entire file content as a single trimmed string
+---@param filename string Path to the file
+---@return string The file content with trimmed whitespace
 function utils.read_file(filename)
   local file = io.open(filename, "r")
   if not file then
@@ -64,10 +101,13 @@ function utils.read_file(filename)
   return utils.trim(data)
 end
 
+--- Reads file content line by line into a table
+---@param filename string Path to the file
+---@return table Array of lines from the file
 function utils.read_lines(filename)
   local lines = {}
   for line in io.lines(filename) do
-    table.insert(lines, line)
+    table.insert(lines, utils.trim(line))
   end
   return lines
 end
