@@ -30,6 +30,22 @@ function utils.int_to_string(n)
   return string.format("%.f", n)
 end
 
+--- Converts a table to a string by putting each element on a new line
+---@param tbl table The table to convert
+---@return string The formatted string representation
+function utils.map2d_to_string(tbl)
+  local result = ""
+  for i = 1, #tbl do
+    local row = tbl[i]
+    for j = 1, #row do
+      local char = row[j]
+      result = result .. tostring(char)
+    end
+    result = result .. "\n"
+  end
+  return result
+end
+
 -- Table utilities
 
 --- Maps a function over a table
@@ -69,6 +85,17 @@ function utils.concat(tbl1, tbl2)
   end
   for _, v in ipairs(tbl2) do
     table.insert(result, v)
+  end
+  return result
+end
+
+--- Clones a table
+---@param tbl table The table to clone
+---@return table The cloned table
+function utils.clone(tbl)
+  local result = {}
+  for k, v in pairs(tbl) do
+    result[k] = v
   end
   return result
 end
