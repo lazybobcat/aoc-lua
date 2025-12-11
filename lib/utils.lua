@@ -149,7 +149,11 @@ end
 function utils.clone(tbl)
   local result = {}
   for k, v in pairs(tbl) do
-    result[k] = v
+    if type(v) == "table" then
+      result[k] = utils.clone(v)
+    else
+      result[k] = v
+    end
   end
   return result
 end

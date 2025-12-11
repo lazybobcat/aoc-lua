@@ -21,11 +21,24 @@ local function advance_beams(data, step)
       if "." == bottom_square then
         data[step + 1][i] = char
       elseif "^" == bottom_square then
-        data[step + 1][i - 1] = char + 1
-        data[step + 1][i + 1] = char + 1
+        local left_square = data[step + 1][i - 1]
+        local right_square = data[step + 1][i + 1]
+
+        if type(left_square) == "number" then
+          data[step + 1][i - 1] = left_square + char
+        else
+          data[step + 1][i - 1] = char
+        end
+
+        if type(right_square) == "number" then
+          data[step + 1][i + 1] = right_square + char
+        else
+          data[step + 1][i + 1] = char
+        end
+
         split_count = split_count + 1
       elseif type(bottom_square) == "number" then
-        data[step + 1][i] = math.max(char, bottom_square)
+        data[step + 1][i] = char + bottom_square
       end
     end
   end
@@ -35,14 +48,15 @@ end
 
 -- Part 1 solution
 function Day.part1(data)
-  local step, max_steps, split_count = 1, #data - 1, 0
+  local manifold = utils.clone(data)
+  local step, max_steps, split_count = 1, #manifold - 1, 0
 
   -- print("--- BEGIN SIMULATION (" .. max_steps .. " steps) ---")
   while step <= max_steps do
     -- print("-- STEP " .. step .. " --")
-    split_count = split_count + advance_beams(data, step)
+    split_count = split_count + advance_beams(manifold, step)
     step = step + 1
-    -- print(utils.map2d_to_string(data))
+    -- print(utils.map2d_to_string(manifold))
   end
   -- print("--- END SIMULATION ---")
 
@@ -51,8 +65,27 @@ end
 
 -- Part 2 solution
 function Day.part2(data)
-  -- Implement part 2 here
-  return 0
+  local manifold = utils.clone(data)
+  local step, max_steps, split_count = 1, #manifold - 1, 0
+
+  -- print("--- BEGIN SIMULATION (" .. max_steps .. " steps) ---")
+  while step <= max_steps do
+    -- print("-- STEP " .. step .. " --")
+    split_count = split_count + advance_beams(manifold, step)
+    step = step + 1
+    -- print(utils.map2d_to_string(manifold))
+  end
+  -- print("--- END SIMULATION ---")
+
+  local finish_line = manifold[#manifold]
+
+  return utils.reduce(finish_line, function(acc, char)
+    if type(char) == "number" then
+      return acc + char
+    end
+
+    return acc
+  end, 0)
 end
 
 -- Main execution
