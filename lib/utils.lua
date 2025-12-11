@@ -62,6 +62,33 @@ end
 
 -- Table utilities
 
+--- Finds the first index of an item in a table
+---@param tbl table The input array
+---@param item any The item to find
+---@return number The index of the item or nil if not found
+function utils.find_index(tbl, item)
+  for i, v in ipairs(tbl) do
+    if v == item then
+      return i
+    end
+  end
+end
+
+--- Finds all indices of an item in a table
+---@param tbl table The input array
+---@param item any The item to find
+---@return table Array of indices
+function utils.find_indices(tbl, item)
+  local indices = {}
+  for i, v in ipairs(tbl) do
+    if v == item then
+      table.insert(indices, i)
+    end
+  end
+
+  return indices
+end
+
 --- Maps a function over a table
 ---@param tbl table The input array
 ---@param func function Function to apply to each element
@@ -180,6 +207,19 @@ function utils.read_lines(filename)
     table.insert(lines, utils.trim(line))
   end
   return lines
+end
+
+--- Reads a 2D map file into a 2D array
+---@param filename string Path to the file
+---@return table 2D array of characters
+function utils.read_2d_map(filename)
+  local lines = utils.read_lines(filename)
+  local result = {}
+  for _, line in ipairs(lines) do
+    local row = utils.string_to_table(line)
+    table.insert(result, row)
+  end
+  return result
 end
 
 return utils
