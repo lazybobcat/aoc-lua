@@ -20,6 +20,14 @@ function utils.split(str, delimiter)
   return result
 end
 
+function utils.string_to_table(str)
+  local result = {}
+  for match in str:gmatch(".") do
+    table.insert(result, match)
+  end
+  return result
+end
+
 --- Trims whitespace from both ends of a string
 ---@param str string The string to trim
 ---@return string The trimmed string
