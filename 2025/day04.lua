@@ -18,7 +18,8 @@ local function parse_input(lines)
   return parsed
 end
 
-local function mark_rolls(map, max_neighbors)
+local function mark_rolls(map, max_neighbors, valid_neighbors_chars)
+  valid_neighbors_chars = valid_neighbors_chars or "@x"
   local marked_map = utils.clone(map)
   -- in the map, rolls are represented by "@".
   -- we want to mark all rolls that are connected to a maximum of max_neighbors with "x"
@@ -29,7 +30,7 @@ local function mark_rolls(map, max_neighbors)
         for di = -1, 1 do
           for dj = -1, 1 do
             if i + di > 0 and i + di <= #marked_map and j + dj > 0 and j + dj <= #marked_map[i + di] then
-              if marked_map[i + di][j + dj] ~= "." then
+              if string.find(valid_neighbors_chars, marked_map[i + di][j + dj], 1, true) then
                 neighbors = neighbors + 1
               end
             end
@@ -43,13 +44,8 @@ local function mark_rolls(map, max_neighbors)
   return marked_map
 end
 
--- Part 1 solution
-function Day.part1(data)
-  local parsed = parse_input(data)
-  local accessible = mark_rolls(parsed, 4)
-  print(utils.map2d_to_string(accessible))
-
-  return utils.sum(utils.map(accessible, function(row)
+local function count_xs(map)
+  return utils.sum(utils.map(map, function(row)
     local xs = utils.filter(row, function(char)
       return char == "x"
     end)
@@ -58,11 +54,33 @@ function Day.part1(data)
   end))
 end
 
+-- Part 1 solution
+function Day.part1(data)
+  local parsed = parse_input(data)
+  local accessible = mark_rolls(parsed, 4)
+  -- print(utils.map2d_to_string(accessible))
+
+  return count_xs(accessible)
+end
+
 -- Part 2 solution
 function Day.part2(data)
-  -- Implement part 2 here
   local parsed = parse_input(data)
-  return 0
+  local accessible = {}
+
+  local latest_results = mark_rolls(parsed, 4, "@")
+  local latest_results_count = count_xs(latest_results)
+  local total = 0
+  while latest_results_count > total
+  do
+    accessible = latest_results
+    total = latest_results_count
+    latest_results = mark_rolls(latest_results, 4, "@")
+    latest_results_count = count_xs(latest_results)
+  end
+  -- print(utils.map2d_to_string(accessible))
+
+  return count_xs(accessible)
 end
 
 -- Main execution
