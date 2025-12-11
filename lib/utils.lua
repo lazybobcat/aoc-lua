@@ -6,13 +6,17 @@ local utils = {}
 
 --- Splits a string by a delimiter
 ---@param str string The string to split
----@param delimiter string The delimiter pattern to split by
+---@param delimiter ?string The delimiter pattern to split by
 ---@return table Array of string parts
 function utils.split(str, delimiter)
+  delimiter = delimiter or "%s"
   local result = {}
-  for match in (str .. delimiter):gmatch("(.-)" .. delimiter) do
+  for match in str:gmatch("[^" .. delimiter .. "]+") do
     table.insert(result, match)
   end
+  -- for match in (str .. delimiter):gmatch("(.-)" .. delimiter) do
+  --   table.insert(result, match)
+  -- end
   return result
 end
 
@@ -58,6 +62,19 @@ function utils.map(tbl, func)
   local result = {}
   for i, v in ipairs(tbl) do
     result[i] = func(v)
+  end
+  return result
+end
+
+--- Reduces a table to a single value
+---@param tbl table The input array
+---@param func function Function to apply to each element
+---@param initial any Initial value
+---@return any Reduced value
+function utils.reduce(tbl, func, initial)
+  local result = initial
+  for _, v in ipairs(tbl) do
+    result = func(result, v)
   end
   return result
 end
@@ -111,6 +128,22 @@ function utils.sum(tbl)
     total = total + v
   end
   return total
+end
+
+--- Transpose a 2D array so that columns become rows and rows become columns
+---@param tbl table Array of arrays
+---@return table Transposed array
+function utils.map2d_rotate(tbl)
+  local result = {}
+  local columns = #tbl[1]
+  local rows = #tbl
+  for i = 1, rows do
+    for j = 1, columns do
+      result[j] = result[j] or {}
+      result[j][i] = tbl[i][j]
+    end
+  end
+  return result
 end
 
 -- File utilities
