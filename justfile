@@ -57,3 +57,7 @@ gen-year year:
 init year:
     mkdir -p {{year}}/inputs
     echo "Initialized year {{year}}"
+
+# List all puzzles for a year with their names
+list year:
+    lua scripts/list_puzzles.lua {{year}}

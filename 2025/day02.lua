@@ -1,12 +1,15 @@
 local utils = require("lib.utils")
-local inspect = require("lib.inspect")
 
 local Day = {}
 
--- Expected results for example input
-Day.expected = {
-  part1 = 1227775554,
-  part2 = 4174379265,
+---@type DayConfig
+Day.config = {
+  name = "Gift Shop",
+  reader = utils.read_file,
+  expected = {
+    part1 = 1227775554,
+    part2 = 4174379265,
+  },
 }
 
 -- We get a line with ranges separated by commas, e.g. "11-22,95-115"
@@ -62,7 +65,7 @@ local find_invalid_ids_part2 = function(startId, endId)
 end
 
 -- Part 1 solution
-function Day.part1(data)
+function Day.part1(data, is_test)
   local parsed = parse_input(data)
   local invalidIds = {}
   for _, range in ipairs(parsed) do
@@ -78,7 +81,7 @@ function Day.part1(data)
 end
 
 -- Part 2 solution
-function Day.part2(data)
+function Day.part2(data, is_test)
   local parsed = parse_input(data)
   local invalidIds = {}
   for _, range in ipairs(parsed) do
@@ -93,55 +96,4 @@ function Day.part2(data)
   return utils.sum(invalidIds)
 end
 
--- Main execution
-function Day.run(input_file, part, is_test)
-  local data = utils.read_file(input_file)
-
-  if part == 1 or part == nil then
-    local result = Day.part1(data)
-    print(string.format("Part 1: %s", result))
-
-    if is_test and Day.expected and Day.expected.part1 then
-      assert(result == Day.expected.part1,
-        string.format("Part 1 assertion failed: expected %s, got %s",
-          Day.expected.part1, result))
-      print("✓ Part 1 test passed")
-    end
-  end
-
-  if part == 2 or part == nil then
-    local result = Day.part2(data)
-    print(string.format("Part 2: %s", result))
-
-    if is_test and Day.expected and Day.expected.part2 then
-      assert(result == Day.expected.part2,
-        string.format("Part 2 assertion failed: expected %s, got %s",
-          Day.expected.part2, result))
-      print("✓ Part 2 test passed")
-    end
-  end
-end
-
--- Allow running as standalone script
-if arg and arg[0]:match("day%d+%.lua$") then
-  local input_file = arg[1]
-  local part = arg[2] and tonumber(arg[2]) or nil
-  local is_test = false
-
-  -- Check for --test flag in remaining args
-  for i = 1, #arg do
-    if arg[i] == "--test" then
-      is_test = true
-      break
-    end
-  end
-
-  if not input_file then
-    local day_num = arg[0]:match("day(%d+)%.lua$")
-    input_file = string.format("inputs/day%s.txt", day_num)
-  end
-
-  Day.run(input_file, part, is_test)
-end
-
-return Day
+return require("lib.runner").run(Day)
