@@ -16,7 +16,7 @@ run year day part="":
 example year day part="":
     #!/usr/bin/env bash
     day_padded=$(printf "%02d" {{day}})
-    cd {{year}} && LUA_PATH="../?.lua;../?/init.lua;;" lua "day${day_padded}.lua" "inputs/day${day_padded}_example.txt" {{part}}
+    cd {{year}} && LUA_PATH="../?.lua;../?/init.lua;;" lua "day${day_padded}.lua" "inputs/day${day_padded}_example.txt" {{part}} --test
 
 # Run only part 1
 p1 year day:
@@ -33,6 +33,18 @@ both year day:
 # Test with example input
 test year day part="":
     @just example {{year}} {{day}} {{part}}
+
+# Test all days for a year with example input
+test-all year:
+    #!/usr/bin/env bash
+    for day in {1..12}; do
+        day_padded=$(printf "%02d" $day)
+        if [ -f "{{year}}/day${day_padded}.lua" ]; then
+            echo "Testing day $day..."
+            just test {{year}} $day || echo "Day $day failed"
+            echo ""
+        fi
+    done
 
 # Create all day files for a year
 gen-year year:
