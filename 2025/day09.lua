@@ -13,23 +13,60 @@ Day.config = {
   --   part2 = utils.read_file,
   -- },
   expected = {
-    part1 = nil,
-    part2 = nil,
+    part1 = 50,
+    part2 = 24,
   },
 }
 
 local function parse_input(lines)
   local parsed = {}
-  -- TODO: transform lines into useful data
+  -- lines are in the format "x,y"
+  for _, line in ipairs(lines) do
+    local pos = utils.split(line, ",")
+    table.insert(parsed, { x = tonumber(pos[1]), y = tonumber(pos[2]) })
+  end
 
   return parsed
 end
 
+-- local function compute_areas(points)
+--   local areas = {}
+--   for i = 1, #points - 1 do
+--     for j = i + 1, #points do
+--       local a = points[i]
+--       local b = points[j]
+--       local area = (math.abs(a.x - b.x) + 1) * (math.abs(a.y - b.y) + 1)
+--       table.insert(areas, area)
+--     end
+--   end
+--
+--   table.sort(areas, function(a, b)
+--     return a > b
+--   end)
+--
+--   return areas
+-- end
+
+local function compute_largest_area(points)
+  local largest_area = 0
+  for i = 1, #points - 1 do
+    for j = i + 1, #points do
+      local a = points[i]
+      local b = points[j]
+      local area = (math.abs(a.x - b.x) + 1) * (math.abs(a.y - b.y) + 1)
+      largest_area = math.max(largest_area, area)
+    end
+  end
+
+  return largest_area
+end
+
 -- Part 1 solution
 function Day.part1(data, is_test)
-  -- Implement part 1 here
   local parsed = parse_input(data)
-  return 0
+  local largest_area = compute_largest_area(parsed)
+
+  return largest_area
 end
 
 -- Part 2 solution
