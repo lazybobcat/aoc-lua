@@ -203,6 +203,76 @@ function runner.get_puzzle_info(Day, day_num)
   }
 end
 
+--- Test a single part and return status
+---@param Day table The Day module
+---@param part_num number The part number (1 or 2)
+---@param example_file string Path to the example/test input file
+---@return string Status: "✓" (pass), "✗" (fail), "?" (pending/not implemented)
+function runner.test_part(Day, part_num, example_file)
+  local part_name = string.format("part%d", part_num)
+  local part_func = Day[part_name]
+
+  -- Check if part function exists
+  if not part_func then
+    return "?"
+  end
+
+  -- Check if part should be skipped
+  if should_skip_part(Day.config, part_num) then
+    return "?"
+  end
+
+  -- Check if expected value is defined
+  if not Day.config or not Day.config.expected then
+    return "?"
+  end
+
+  local expected = Day.config.expected[part_name]
+  if expected == nil then
+    return "?"
+  end
+
+  -- Check if example file exists
+  local test_file = io.open(example_file, "r")
+  if not test_file then
+    return "?"
+  end
+  io.close(test_file)
+
+  -- Get the appropriate reader
+  local reader = get_reader(Day.config, part_num)
+
+  -- Try to read the input data
+  local success, data = pcall(reader, example_file)
+  if not success then
+    return "✗"
+  end
+
+  -- Run before hook if present
+  if Day.config and Day.config.hooks then
+    local before_hook = Day.config.hooks[string.format("before_part%d", part_num)]
+    if before_hook then
+      local hook_success, err = pcall(before_hook, data, true)
+      if not hook_success then
+        return "✗"
+      end
+    end
+  end
+
+  -- Run the part function
+  local run_success, result = pcall(part_func, data, true)
+  if not run_success then
+    return "✗"
+  end
+
+  -- Compare result with expected
+  if result == expected then
+    return "✓"
+  else
+    return "✗"
+  end
+end
+
 --- Main entry point for running a Day module
 ---@param Day table The Day module with part1, part2, and optional config
 ---@return table The Day module (for chaining)

@@ -2,7 +2,7 @@
 --- Script to list all puzzles for a given year with their names
 local runner = require("lib.runner")
 
-local function list_puzzles(year)
+local function list_puzzles(year, with_tests)
   local year_dir = string.format("%s", year)
 
   -- Check if year directory exists
@@ -15,6 +15,10 @@ local function list_puzzles(year)
 
   print(string.format("Puzzles for year %s:", year))
   print(string.rep("-", 50))
+
+  -- Star tracking
+  local stars_earned = 0
+  local total_stars = 0
 
   -- Iterate through potential days (1-25)
   for day = 1, 25 do
@@ -43,7 +47,45 @@ local function list_puzzles(year)
       if success and Day then
         local info = runner.get_puzzle_info(Day, day_padded)
         local parts_str = table.concat(info.parts, ", ")
-        print(string.format("Day %s: %-30s [Parts: %s]", info.day, info.name, parts_str))
+
+        -- Build the output string
+        local output = string.format("Day %s: %-30s [Parts: %s]", info.day, info.name, parts_str)
+
+        -- Count total possible stars for this day
+        total_stars = total_stars + 2
+
+        -- Add test status if requested
+        if with_tests then
+          local status_parts = {}
+          local example_file = string.format("%s/inputs/day%s_example.txt", year_dir, day_padded)
+
+          -- Test part 1 if it exists
+          if Day.part1 then
+            local status1 = runner.test_part(Day, 1, example_file)
+            table.insert(status_parts, status1)
+            if status1 == "✓" then
+              stars_earned = stars_earned + 1
+            end
+          else
+            table.insert(status_parts, "?")
+          end
+
+          -- Test part 2 if it exists
+          if Day.part2 then
+            local status2 = runner.test_part(Day, 2, example_file)
+            table.insert(status_parts, status2)
+            if status2 == "✓" then
+              stars_earned = stars_earned + 1
+            end
+          else
+            table.insert(status_parts, "?")
+          end
+
+          local status_str = table.concat(status_parts, ", ")
+          output = output .. string.format(" [%s]", status_str)
+        end
+
+        print(output)
 
         -- Unload the module to avoid conflicts
         package.loaded[string.format("%s.day%s", year, day_padded)] = nil
@@ -52,13 +94,27 @@ local function list_puzzles(year)
       end
     end
   end
+
+  -- Display star summary
+  print(string.rep("-", 50))
+  print(string.format("Stars earned: %d / %d ⭐", stars_earned, total_stars))
 end
 
 -- Main execution
 if not arg[1] then
-  print("Usage: lua scripts/list_puzzles.lua <year>")
+  print("Usage: lua scripts/list_puzzles.lua <year> [--with-tests]")
   os.exit(1)
 end
 
 local year = arg[1]
-list_puzzles(year)
+local with_tests = false
+
+-- Check for --with-tests flag
+for i = 2, #arg do
+  if arg[i] == "--with-tests" then
+    with_tests = true
+    break
+  end
+end
+
+list_puzzles(year, with_tests)

@@ -137,7 +137,6 @@ function Day.part1(data, is_test)
   local boxes_distances = compute_distances(boxes)
 
   local circuits, circuits_lengths = make_circuits(boxes, boxes_distances, nb_connections)
-  print(circuits_lengths[1], circuits_lengths[2], circuits_lengths[3])
 
   return circuits_lengths[1] * circuits_lengths[2] * circuits_lengths[3]
 end
